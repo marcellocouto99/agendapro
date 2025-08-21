@@ -99,9 +99,9 @@ class Calendar {
     }
     
     selectDate(day) {
-        // Remove seleção anterior (mas não remove .today!)
+        // Remove seleção anterior (mas não remove o dia atual!)
         const previousSelected = document.querySelector('.calendar-day.selected');
-        if (previousSelected) {
+        if (previousSelected && !previousSelected.classList.contains('today')) {
             previousSelected.classList.remove('selected');
         }
 
@@ -111,7 +111,7 @@ class Calendar {
             if (Number(element.textContent.trim()) === day) {
                 element.classList.add('selected');
 
-                // Mantém destaque se for hoje
+                // Se for hoje, mantém destaque também
                 if (element.classList.contains('today')) {
                     element.classList.add('today');
                 }
