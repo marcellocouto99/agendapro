@@ -137,7 +137,9 @@ class Calendar {
             dayElements.forEach(element => {
                 const dayNumber = Number(element.textContent.trim());
                 if (dayNumber === today.getDate()) {
-                    element.classList.add('today'); // ✅ usa a classe CSS
+                    element.classList.add('today'); 
+                    element.classList.add('selected'); // ✅ já vem selecionado ao abrir
+                    this.selectedDate = today;        // guarda a data
                 }
             });
         }
