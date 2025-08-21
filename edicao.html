@@ -1,213 +1,133 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-  <meta charset="UTF-8">
-  <title>Editar Agendamentos</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="menu.css">
-  <link rel="stylesheet" href="edicao.css">
-</head>
-<body>
-  <div class="logo">
-    <img src="img/LogoPitstop.png" alt="Logo" style="margin-top:20px;display:block;margin-inline:auto" width="200" height="200">
-  </div>
-  <h1 class="titulo">Editar Agendamentos</h1>
-  <h6 class="subtitulo">Gerencie, altere ou exclua seus agendamentos</h6>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+  import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+  import {
+    getFirestore, collection, getDocs, doc, updateDoc, deleteDoc,
+    query, where
+  } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
-  <div class="container mt-4">
-    <div class="search-section" style="display:flex; gap:8px; margin-bottom:12px;">
-      <input type="text" id="searchInput" class="form-control" placeholder="Buscar por nome, placa ou loja">
-      <button id="searchButton" class="btn btn-primary">Buscar</button>
-      <button id="clearButton" class="btn btn-outline-secondary">Limpar</button>
-    </div>
-    <div class="table-responsive">
-      <table id="appointmentsTable">
-        <thead>
-          <tr>
-            <th>Nome</th><th>Placa</th><th>Loja</th><th>Data</th><th>Hora</th><th>Ações</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </div>
-  </div>
+  const firebaseConfig = {
+    apiKey: "AIzaSyBihcx1ihMSs7egInoGOzV1mWIw9D8LUzw",
+    authDomain: "agendapro-f6ecc.firebaseapp.com",
+    projectId: "agendapro-f6ecc",
+    storageBucket: "agendapro-f6ecc.firebasestorage.app",
+    messagingSenderId: "1045418539073",
+    appId: "1:1045418539073:web:aa920e129ece148c0feec0"
+  };
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
 
-  <!-- Modal Edição -->
-  <div id="editModal" class="modal">
-    <div class="modal-content">
-      <span class="close" id="closeModal">&times;</span>
-      <h2>Editar Agendamento</h2>
-      <form id="editForm">
-        <div class="form-group">
-          <label for="editName">Nome</label>
-          <input type="text" id="editName" required class="form-control">
-        </div>
-        <div class="form-group">
-          <label for="editPlate">Placa</label>
-          <input type="text" id="editPlate" required class="form-control">
-        </div>
-        <div class="form-group">
-          <label for="editStore">Loja</label>
-          <input type="text" id="editStore" required class="form-control">
-        </div>
-        <div class="form-group">
-          <label for="editDate">Data</label>
-          <input type="date" id="editDate" required class="form-control">
-        </div>
-        <div class="form-group">
-          <label for="editTime">Hora</label>
-          <select id="editTime" required class="form-control">
-            <option value="0900">09:00</option>
-            <option value="1000">10:00</option>
-            <option value="1100">11:00</option>
-            <option value="1400">14:00</option>
-            <option value="1500">15:00</option>
-            <option value="1600">16:00</option>
-          </select>
-        </div>
-        <div class="form-actions">
-          <button type="submit" class="btn btn-success">Salvar</button>
-          <button type="button" id="cancelEdit" class="btn btn-secondary">Cancelar</button>
-        </div>
-      </form>
-    </div>
-  </div>
+  onAuthStateChanged(auth, (user)=>{ if(!user) window.location.href="index.html"; });
 
-  <!-- Menu Lateral -->
-  <nav class="menu-lateral">
-    <div class="btn-expandir"><i class="bi bi-list" id="btn-exp"></i></div>
-    <ul>
-      <li class="item-menu"><a href="calendario.html"><span class="icon"><i class="bi bi-calendar3"></i></span><span class="txt-link">Calendário</span></a></li>
-      <li class="item-menu"><a href="agendamentos.html"><span class="icon"><i class="bi bi-file-earmark-check"></i></span><span class="txt-link">Agendamento</span></a></li>
-      <li class="item-menu"><a href="#"><span class="icon"><i class="bi bi-gear"></i></span><span class="txt-link">Configuração</span></a></li>
-      <li class="item-menu ativo"><a href="edicao.html"><span class="icon"><i class="bi bi-pencil-square"></i></span><span class="txt-link">Editar</span></a></li>
-      <li class="item-menu"><a href="#"><span class="icon"><i class="bi bi-person-circle"></i></span><span class="txt-link">Conta</span></a></li>
-      <li class="item-menu"><a href="#" id="logoutBtn"><span class="icon"><i class="bi bi-box-arrow-right"></i></span><span class="txt-link">Sair</span></a></li>
-      <li class="logo-item">
-        <span class="icon"><img src="img/LogoAgendaPro.png" alt="Logo AgendaPro" class="logo-agendapro"></span>
-        <span class="logo-text">AgendaPro</span>
-      </li>
-    </ul>
-  </nav>
+  document.getElementById("logoutBtn").addEventListener("click", async (e)=>{
+    e.preventDefault();
+    if (!confirm("Tem certeza que deseja sair da conta?")) return;
+    await signOut(auth);
+    window.location.href = "index.html";
+  });
 
-  <!-- Firebase + Lógica -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
-    import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
-    import {
-      getFirestore, collection, getDocs, doc, updateDoc, deleteDoc,
-      query, where
-    } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+  const tbody = document.querySelector("#appointmentsTable tbody");
+  const searchInput = document.getElementById("searchInput");
+  const searchButton = document.getElementById("searchButton");
+  const clearButton = document.getElementById("clearButton");
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyBihcx1ihMSs7egInoGOzV1mWIw9D8LUzw",
-      authDomain: "agendapro-f6ecc.firebaseapp.com",
-      projectId: "agendapro-f6ecc",
-      storageBucket: "agendapro-f6ecc.firebasestorage.app",
-      messagingSenderId: "1045418539073",
-      appId: "1:1045418539073:web:aa920e129ece148c0feec0"
-    };
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+  let allRows = [];
 
-    onAuthStateChanged(auth, (user)=>{ if(!user) window.location.href="index.html"; });
+  // 🔥 Função para remover agendamentos antigos automaticamente
+  async function cleanOldAppointments() {
+    const today = new Date();
+    today.setHours(0,0,0,0); // garante meia-noite
 
-    document.getElementById("logoutBtn").addEventListener("click", async (e)=>{
+    const snap = await getDocs(collection(db, "agendamentos"));
+    for (const d of snap.docs) {
+      const data = d.data();
+      if (data.dateISO) {
+        const agendamentoDate = new Date(data.dateISO + "T00:00:00");
+        if (agendamentoDate < today) {
+          await deleteDoc(doc(db, "agendamentos", d.id));
+          console.log("Apagado agendamento antigo:", d.id);
+        }
+      }
+    }
+  }
+
+  async function loadAll(){
+    tbody.innerHTML = "<tr><td colspan='6'>Carregando...</td></tr>";
+
+    // ✅ Primeiro limpa os antigos
+    await cleanOldAppointments();
+
+    // Depois carrega os atuais
+    const snap = await getDocs(collection(db,"agendamentos"));
+    allRows = [];
+    snap.forEach(d=>{
+      allRows.push({ id: d.id, ...d.data() });
+    });
+    renderTable(allRows);
+  }
+
+  function formatTime(t){
+    if (!t || t.length!==4) return t||"";
+    return `${t.slice(0,2)}:${t.slice(2)}`;
+  }
+
+  function formatDate(isoDate){
+    if (!isoDate) return "";
+    const [year, month, day] = isoDate.split("-");
+    return `${day}/${month}/${year}`;
+  }
+
+  function renderTable(rows){
+    if (!rows.length){
+      tbody.innerHTML = "<tr><td colspan='6'>Nenhum agendamento encontrado.</td></tr>";
+      return;
+    }
+
+    rows.sort((a, b) => {
+      const dateA = new Date(`${a.dateISO}T${formatTime(a.time)}`);
+      const dateB = new Date(`${b.dateISO}T${formatTime(b.time)}`);
+      return dateA - dateB;
+    });
+
+    tbody.innerHTML = "";
+    rows.forEach(r=>{
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${r.name || ""}</td>
+        <td>${r.plate || ""}</td>
+        <td>${r.store || ""}</td>
+        <td>${formatDate(r.dateISO) || ""}</td>
+        <td>${formatTime(r.time) || ""}</td>
+        <td>
+          <button class="edit-btn" data-edit="${r.id}">Editar</button>
+          <button class="delete-btn" data-del="${r.id}">Excluir</button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  // Busca
+  function doSearch(){
+    const q = (searchInput.value || "").trim().toLowerCase();
+    if (!q) { renderTable(allRows); return; }
+    const filtered = allRows.filter(r =>
+      (r.name||"").toLowerCase().includes(q) ||
+      (r.plate||"").toLowerCase().includes(q) ||
+      (r.store||"").toLowerCase().includes(q)
+    );
+    renderTable(filtered);
+  }
+  searchButton.addEventListener("click", doSearch);
+  searchInput.addEventListener("keydown", (e)=>{
+    if (e.key === "Enter") {
       e.preventDefault();
-      if (!confirm("Tem certeza que deseja sair da conta?")) return;
-      await signOut(auth);
-      window.location.href = "index.html";
-    });
-
-    const tbody = document.querySelector("#appointmentsTable tbody");
-    const searchInput = document.getElementById("searchInput");
-    const searchButton = document.getElementById("searchButton");
-    const clearButton = document.getElementById("clearButton");
-
-    let allRows = [];
-
-    async function loadAll(){
-      tbody.innerHTML = "<tr><td colspan='6'>Carregando...</td></tr>";
-      const snap = await getDocs(collection(db,"agendamentos"));
-      allRows = [];
-      snap.forEach(d=>{
-        allRows.push({ id: d.id, ...d.data() });
-      });
-      renderTable(allRows);
+      doSearch();
     }
+  });
+  clearButton.addEventListener("click", ()=>{ searchInput.value=""; renderTable(allRows); });
 
-    function formatTime(t){
-      if (!t || t.length!==4) return t||"";
-      return `${t.slice(0,2)}:${t.slice(2)}`;
-    }
-
-    function formatDate(isoDate){
-      if (!isoDate) return "";
-      const [year, month, day] = isoDate.split("-");
-      return `${day}/${month}/${year}`;
-    }
-
-    function renderTable(rows){
-      if (!rows.length){
-        tbody.innerHTML = "<tr><td colspan='6'>Nenhum agendamento encontrado.</td></tr>";
-        return;
-      }
-
-      // Ordenar por data e hora
-      rows.sort((a, b) => {
-        const dateA = new Date(`${a.dateISO}T${formatTime(a.time)}`);
-        const dateB = new Date(`${b.dateISO}T${formatTime(b.time)}`);
-        return dateA - dateB;
-      });
-
-      tbody.innerHTML = "";
-      rows.forEach(r=>{
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${r.name || ""}</td>
-          <td>${r.plate || ""}</td>
-          <td>${r.store || ""}</td>
-          <td>${formatDate(r.dateISO) || ""}</td>
-          <td>${formatTime(r.time) || ""}</td>
-          <td>
-            <button class="edit-btn" data-edit="${r.id}">Editar</button>
-            <button class="delete-btn" data-del="${r.id}">Excluir</button>
-          </td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
-
-    // Buscar
-    function doSearch(){
-      const q = (searchInput.value || "").trim().toLowerCase();
-      if (!q) { renderTable(allRows); return; }
-      const filtered = allRows.filter(r =>
-        (r.name||"").toLowerCase().includes(q) ||
-        (r.plate||"").toLowerCase().includes(q) ||
-        (r.store||"").toLowerCase().includes(q)
-      );
-      renderTable(filtered);
-    }
-    searchButton.addEventListener("click", doSearch);
-    searchInput.addEventListener("keydown", (e)=>{
-      if (e.key === "Enter") {
-        e.preventDefault();
-        doSearch();
-      }
-    });
-    clearButton.addEventListener("click", ()=>{ searchInput.value=""; renderTable(allRows); });
-
-    // TODO: aqui segue edição, exclusão, modal (já estava ok no seu código)...
-
-    // iniciar
-    await loadAll();
-  </script>
-
-  <script src="menu.js"></script>
-</body>
-</html>
+  // iniciar
+  await loadAll();
+</script>
