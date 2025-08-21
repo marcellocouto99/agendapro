@@ -195,3 +195,14 @@ button.delete-btn:hover {
 .cancel-btn:hover {
     background-color: #555;
 }
+
+/* === CORREÇÃO: inputs em foco === */
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    background-color: #111;       /* mantém fundo escuro */
+    color: #FFD700;               /* mantém texto amarelo */
+    border: 2px solid #FFD700;
+    outline: none;                /* remove borda azul padrão */
+    box-shadow: 0 0 5px #FFD700;  /* efeito de brilho */
+}
