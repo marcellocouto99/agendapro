@@ -128,7 +128,7 @@
     const searchButton = document.getElementById("searchButton");
     const clearButton = document.getElementById("clearButton");
 
-    let allRows = []; // cache em memória [{id, ...data}]
+    let allRows = [];
 
     async function loadAll(){
       tbody.innerHTML = "<tr><td colspan='6'>Carregando...</td></tr>";
@@ -140,62 +140,49 @@
       renderTable(allRows);
     }
 
-    function formatTime(t){ // "0900" -> "09:00"
+    function formatTime(t){
       if (!t || t.length!==4) return t||"";
       return `${t.slice(0,2)}:${t.slice(2)}`;
     }
 
-    function unformatTime(t){ // "09:00" -> "0900"
-      return t.replace(":","");
-    }
-
-    // NOVO: converte "2025-08-22" -> "22/08/2025"
-    function formatDateBR(dateISO) {
-      if (!dateISO) return "";
-      const [ano, mes, dia] = dateISO.split("-");
-      return `${dia}/${mes}/${ano}`;
+    function formatDate(isoDate){
+      if (!isoDate) return "";
+      const [year, month, day] = isoDate.split("-");
+      return `${day}/${month}/${year}`;
     }
 
     function renderTable(rows){
-  if (!rows.length){
-    tbody.innerHTML = "<tr><td colspan='6'>Nenhum agendamento encontrado.</td></tr>";
-    return;
-  }
+      if (!rows.length){
+        tbody.innerHTML = "<tr><td colspan='6'>Nenhum agendamento encontrado.</td></tr>";
+        return;
+      }
 
-  // ✅ Ordenar por data e depois por hora
-  rows.sort((a, b) => {
-    const dateA = new Date(`${a.dateISO}T${formatTime(a.time)}`);
-    const dateB = new Date(`${b.dateISO}T${formatTime(b.time)}`);
-    return dateA - dateB;
-  });
+      // Ordenar por data e hora
+      rows.sort((a, b) => {
+        const dateA = new Date(`${a.dateISO}T${formatTime(a.time)}`);
+        const dateB = new Date(`${b.dateISO}T${formatTime(b.time)}`);
+        return dateA - dateB;
+      });
 
-  tbody.innerHTML = "";
-  rows.forEach(r=>{
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>${r.name || ""}</td>
-      <td>${r.plate || ""}</td>
-      <td>${r.store || ""}</td>
-      <td>${formatDate(r.dateISO) || ""}</td>
-      <td>${formatTime(r.time) || ""}</td>
-      <td>
-        <button class="edit-btn" data-edit="${r.id}">Editar</button>
-        <button class="delete-btn" data-del="${r.id}">Excluir</button>
-      </td>
-    `;
-    tbody.appendChild(tr);
-  });
-}
+      tbody.innerHTML = "";
+      rows.forEach(r=>{
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${r.name || ""}</td>
+          <td>${r.plate || ""}</td>
+          <td>${r.store || ""}</td>
+          <td>${formatDate(r.dateISO) || ""}</td>
+          <td>${formatTime(r.time) || ""}</td>
+          <td>
+            <button class="edit-btn" data-edit="${r.id}">Editar</button>
+            <button class="delete-btn" data-del="${r.id}">Excluir</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
 
-// ✅ Nova função para exibir data como dd/mm/aaaa
-function formatDate(isoDate){
-  if (!isoDate) return "";
-  const [year, month, day] = isoDate.split("-");
-  return `${day}/${month}/${year}`;
-}
-
-
-    // Buscar (filtro local)
+    // Buscar
     function doSearch(){
       const q = (searchInput.value || "").trim().toLowerCase();
       if (!q) { renderTable(allRows); return; }
@@ -207,9 +194,15 @@ function formatDate(isoDate){
       renderTable(filtered);
     }
     searchButton.addEventListener("click", doSearch);
+    searchInput.addEventListener("keydown", (e)=>{
+      if (e.key === "Enter") {
+        e.preventDefault();
+        doSearch();
+      }
+    });
     clearButton.addEventListener("click", ()=>{ searchInput.value=""; renderTable(allRows); });
 
-    // ... resto do código permanece igual (edição, exclusão, modal etc.)
+    // TODO: aqui segue edição, exclusão, modal (já estava ok no seu código)...
 
     // iniciar
     await loadAll();
