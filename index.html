@@ -1,86 +1,108 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-    <head>
-        <meta charset="UTF-8">
-        <title>AgendaPro</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'> 
-        <link rel="stylesheet" href="LoginStyle.css">
-
-
-    </head>
-    <body>
-        <div class="login-container">
+<head>
+    <meta charset="UTF-8">
+    <title>AgendaPro</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'> 
+    <link rel="stylesheet" href="LoginStyle.css">
+</head>
+<body>
+    <div class="login-container">
         <div class="logo">
             <img src="img/Logo AgendaPro.png" alt="Logo da Empresa">
         </div>
         <main class="container">
-            <form>
+            <form id="loginForm">
                 <h1>Login</h1>
                 <div class="input-box">
-                    <input placeholder="E-mail" type="email">
+                    <input id="email" placeholder="E-mail" type="email" required>
                     <i class="bx bxs-user"></i>
                 </div>
                 <div class="input-box">
-                    <input placeholder="Senha" type="password">
+                    <input id="password" placeholder="Senha" type="password" required>
                     <i class="bx bxs-lock-alt"></i>
                 </div>
 
                 <div class="remember-forgot">
                     <label>
-                    <input type="checkbox">
-                    Lembrar senha
+                        <input type="checkbox" id="rememberMe"> Lembrar senha
                     </label>
                     <a href="#">Esqueci a senha</a>
                 </div>
                 <button type="submit" class="login">Login</button>
                 <div class="register-link">
-                    <p>Não tem uma conta?<a href="CadastroHtml.html"> Cadastre-se</a></p>
+                    <p>Não tem uma conta? <a href="CadastroHtml.html">Cadastre-se</a></p>
                 </div>
             </form>
         </main>
+    </div>
 
-        <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
-  import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
 
-  // Configuração do Firebase
-  const firebaseConfig = {
-    apiKey: "AIzaSyBihcx1ihMSs7egInoGOzV1mWIw9D8LUzw",
-    authDomain: "agendapro-f6ecc.firebaseapp.com",
-    projectId: "agendapro-f6ecc",
-    storageBucket: "agendapro-f6ecc.firebasestorage.app",
-    messagingSenderId: "1045418539073",
-    appId: "1:1045418539073:web:aa920e129ece148c0feec0"
-  };
+        // Configuração do Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyBihcx1ihMSs7egInoGOzV1mWIw9D8LUzw",
+            authDomain: "agendapro-f6ecc.firebaseapp.com",
+            projectId: "agendapro-f6ecc",
+            storageBucket: "agendapro-f6ecc.firebasestorage.app",
+            messagingSenderId: "1045418539073",
+            appId: "1:1045418539073:web:aa920e129ece148c0feec0"
+        };
 
-  // Inicializa Firebase
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
+        // Inicializa Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
 
-  // Captura o formulário
-  const form = document.querySelector("form");
+        // Referências
+        const form = document.getElementById("loginForm");
+        const emailInput = document.getElementById("email");
+        const passwordInput = document.getElementById("password");
+        const rememberMe = document.getElementById("rememberMe");
 
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault(); // impede reload
+        // Carrega dados salvos
+        window.addEventListener("load", () => {
+            const savedEmail = localStorage.getItem("savedEmail");
+            const savedPassword = localStorage.getItem("savedPassword");
 
-    const email = form.querySelector('input[type="email"]').value;
-    const senha = form.querySelector('input[type="password"]').value;
+            if (savedEmail && savedPassword) {
+                emailInput.value = savedEmail;
+                passwordInput.value = savedPassword;
+                rememberMe.checked = true;
+            }
+        });
 
-    try {
-      await signInWithEmailAndPassword(auth, email, senha);
-      alert("✅ Login realizado com sucesso!");
-      window.location.href = "calendario.html"; // 👉 redireciona para o calendário
-    } catch (error) {
-      console.error("Erro no login:", error);
-      alert("❌ Erro no login: " + error.message);
-    }
-  });
-</script>
+        // Login
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
 
+            const email = emailInput.value;
+            const senha = passwordInput.value;
 
+            try {
+                await signInWithEmailAndPassword(auth, email, senha);
 
-    </body>
+                // Salva ou apaga dados conforme a escolha
+                if (rememberMe.checked) {
+                    localStorage.setItem("savedEmail", email);
+                    localStorage.setItem("savedPassword", senha);
+                } else {
+                    localStorage.removeItem("savedEmail");
+                    localStorage.removeItem("savedPassword");
+                }
 
+                alert("✅ Login realizado com sucesso!");
+                window.location.href = "calendario.html";
+            } catch (error) {
+                console.error("Erro no login:", error);
+                alert("❌ Erro no login: " + error.message);
+            }
+        });
+    </script>
+</body>
 </html>
+
+
 
