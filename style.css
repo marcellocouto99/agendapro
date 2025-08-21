@@ -63,7 +63,7 @@ body {
 .calendar-container {
     position: relative;
     background-color: #2a2a2a;
-    border: 2px solid #ffd700;   /* ✅ adiciona a borda amarela */
+    border: 2px solid #ffd700;   /* ✅ borda amarela no container */
     border-radius: 15px;
     padding: 30px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
@@ -146,6 +146,7 @@ body {
     transform: scale(1.05);
 }
 
+/* ✅ Dia selecionado */
 .calendar-day.selected {
     background-color: #ffd700;
     color: #000;
@@ -153,6 +154,14 @@ body {
     transform: scale(1.1);
 }
 
+/* ✅ Dia atual (hoje) SEM perder quando clicar em outro */
+.calendar-day.today {
+    border: 2px solid #ffd700;
+    font-weight: bold;
+    background-color: #3a3a3a; /* mantém o fundo normal */
+}
+
+/* Dia de outro mês */
 .calendar-day.other-month {
     opacity: 0.3;
     cursor: not-allowed;
@@ -207,20 +216,18 @@ body {
     transform: translateY(-2px);
     box-shadow: 0 4px 15px rgba(0, 255, 0, 0.3);
 }
-/* ===== ESTILO DO HORÁRIO SELECIONADO ===== */
 
-/* Estilo para o botão de horário quando ele está ATIVAMENTE selecionado */
+/* ===== ESTILO DO HORÁRIO SELECIONADO ===== */
 .time-slot.selected {
-    background-color: #28a745; /* O mesmo verde de sucesso da notificação */
-    color: white;              /* Texto branco para melhor contraste */
-    font-weight: bold;         /* Deixa o texto em negrito para destacar */
-    transform: translateY(-2px); /* Mantém o leve efeito de elevação */
-    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3); /* Sombra verde sutil */
+    background-color: #28a745;
+    color: white;
+    font-weight: bold;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
 }
 
-/* Garante que, mesmo passando o mouse sobre um botão selecionado, ele continue verde */
 .time-slot.selected:hover {
-    background-color: #218838; /* Um tom de verde um pouco mais escuro no hover */
+    background-color: #218838;
     color: white;
 }
 
@@ -272,6 +279,7 @@ body {
         padding: 5px;
     }
 }
+
 /* Ripple amarelo */
 @keyframes ripple-zoom {
   to {
@@ -280,13 +288,10 @@ body {
   }
 }
 
-/* o dia do calendário precisa ser o referencial do ripple */
 .calendar-day {
-  position: relative; /* importante pro ::after */
-  /* NÃO usar overflow: hidden se isso quebrar seu layout */
+  position: relative;
 }
 
-/* pseudo-elemento que vira o círculo do ripple */
 .calendar-day::after {
   content: "";
   position: absolute;
@@ -295,37 +300,12 @@ body {
   left: calc(var(--ripple-x, 0) - var(--ripple-size, 0) / 2);
   top:  calc(var(--ripple-y, 0) - var(--ripple-size, 0) / 2);
   border-radius: 50%;
-  background: rgba(255, 215, 0, 0.35); /* amarelo */
-  transform: scale(0);
-  opacity: 1;
-  pointer-events: none;
-}
-
-.calendar-day.ripple-anim::after {
-  animation: ripple-zoom 0.45s ease-out forwards;
-}
-
-/* Cada célula do calendário precisa ter isso */
-.calendar-day {
-  position: relative; /* referencial para o ::after */
-}
-
-/* O círculo do ripple */
-.calendar-day::after {
-  content: "";
-  position: absolute;
-  width: var(--ripple-size, 0);
-  height: var(--ripple-size, 0);
-  left: calc(var(--ripple-x, 0) - var(--ripple-size, 0) / 2);
-  top:  calc(var(--ripple-y, 0) - var(--ripple-size, 0) / 2);
-  border-radius: 50%;
-  background: rgba(255, 215, 0, 0.35); /* amarelo */
+  background: rgba(255, 215, 0, 0.35);
   transform: scale(0);
   opacity: 0; 
   pointer-events: none;
 }
 
-/* Quando a classe entra, roda a animação */
 .calendar-day.ripple-anim::after {
   opacity: 1;
   animation: ripple-zoom 0.45s ease-out forwards;
@@ -339,19 +319,12 @@ body {
     font-family: "Roboto Slab", serif;
     text-align: left;
     margin-left: 692px;
-
 }
+
 .calendar-day.disabled {
   color: #aaa;
-  pointer-events: none; /* não permite clique */
+  pointer-events: none;
   opacity: 0.5;
-
-}
-
-/* Dia atual com borda amarela */
-.calendar-day.today {
-  border: 2px solid #ffd700;
-  font-weight: bold;
 }
 
 /* Dia com agendamento */
