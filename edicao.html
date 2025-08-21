@@ -157,27 +157,43 @@
     }
 
     function renderTable(rows){
-      if (!rows.length){
-        tbody.innerHTML = "<tr><td colspan='6'>Nenhum agendamento encontrado.</td></tr>";
-        return;
-      }
-      tbody.innerHTML = "";
-      rows.forEach(r=>{
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${r.name || ""}</td>
-          <td>${r.plate || ""}</td>
-          <td>${r.store || ""}</td>
-          <td>${formatDateBR(r.dateISO) || ""}</td> <!-- 👈 DD/MM/AAAA -->
-          <td>${formatTime(r.time) || ""}</td>
-          <td>
-            <button class="edit-btn" data-edit="${r.id}">Editar</button>
-            <button class="delete-btn" data-del="${r.id}">Excluir</button>
-          </td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
+  if (!rows.length){
+    tbody.innerHTML = "<tr><td colspan='6'>Nenhum agendamento encontrado.</td></tr>";
+    return;
+  }
+
+  // ✅ Ordenar por data e depois por hora
+  rows.sort((a, b) => {
+    const dateA = new Date(`${a.dateISO}T${formatTime(a.time)}`);
+    const dateB = new Date(`${b.dateISO}T${formatTime(b.time)}`);
+    return dateA - dateB;
+  });
+
+  tbody.innerHTML = "";
+  rows.forEach(r=>{
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${r.name || ""}</td>
+      <td>${r.plate || ""}</td>
+      <td>${r.store || ""}</td>
+      <td>${formatDate(r.dateISO) || ""}</td>
+      <td>${formatTime(r.time) || ""}</td>
+      <td>
+        <button class="edit-btn" data-edit="${r.id}">Editar</button>
+        <button class="delete-btn" data-del="${r.id}">Excluir</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+// ✅ Nova função para exibir data como dd/mm/aaaa
+function formatDate(isoDate){
+  if (!isoDate) return "";
+  const [year, month, day] = isoDate.split("-");
+  return `${day}/${month}/${year}`;
+}
+
 
     // Buscar (filtro local)
     function doSearch(){
