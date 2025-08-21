@@ -58,11 +58,11 @@
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
 
-  // 🎯 Captura o formulário
+  // Captura o formulário
   const form = document.querySelector("form");
 
   form.addEventListener("submit", async (e) => {
-    e.preventDefault(); // impede reload da página
+    e.preventDefault(); // impede reload
 
     const email = form.querySelector('input[type="email"]').value;
     const senha = form.querySelector('input[type="password"]').value;
@@ -70,8 +70,7 @@
     try {
       await signInWithEmailAndPassword(auth, email, senha);
       alert("✅ Login realizado com sucesso!");
-      // redireciona para a próxima página
-      window.location.href = "home.html"; 
+      window.location.href = "calendario.html"; // 👉 redireciona para o calendário
     } catch (error) {
       console.error("Erro no login:", error);
       alert("❌ Erro no login: " + error.message);
@@ -80,6 +79,8 @@
 </script>
 
 
+
     </body>
 
 </html>
+
