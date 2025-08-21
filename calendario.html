@@ -55,7 +55,7 @@
         </a>
       </li>
       <li class="item-menu">
-        <a href="#">
+        <a href="#" id="logoutBtn">
           <span class="icon"><i class="bi bi-box-arrow-right"></i></span>
           <span class="txt-link">Sair</span>
         </a>
@@ -155,9 +155,45 @@
 
   // Initialize Firebase
   const app = initializeApp(firebaseConfig);
+
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+  import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBihcx1ihMSs7egInoGOzV1mWIw9D8LUzw",
+    authDomain: "agendapro-f6ecc.firebaseapp.com",
+    projectId: "agendapro-f6ecc",
+    storageBucket: "agendapro-f6ecc.firebasestorage.app",
+    messagingSenderId: "1045418539073",
+    appId: "1:1045418539073:web:aa920e129ece148c0feec0"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  // se não tiver logado, volta pro login
+  onAuthStateChanged(auth, (user) => {
+    if (!user) {
+      window.location.href = "index.html";
+    }
+  });
+
+  // botão de logout
+  const logoutBtn = document.getElementById("logoutBtn");
+  logoutBtn.addEventListener("click", async (e) => {
+    e.preventDefault();
+    try {
+      await signOut(auth);
+      alert("Você saiu da conta!");
+      window.location.href = "index.html";
+    } catch (error) {
+      console.error("Erro ao sair:", error);
+    }
+  });
 </script>
 
   <script src="menu.js"></script>
   <script src="calendario.js"></script>
 </body>
 </html>
+
