@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+    <head>
+        <meta charset="UTF-8">
+        <title>AgendaPro</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'> 
+        <link rel="stylesheet" href="LoginStyle.css">
+
+
+    </head>
+    <body>
+        <div class="login-container">
+        <div class="logo">
+            <img src="img/Logo AgendaPro.png" alt="Logo da Empresa">
+        </div>
+        <main class="container">
+            <form>
+                <h1>Login</h1>
+                <div class="input-box">
+                    <input placeholder="E-mail" type="email">
+                    <i class="bx bxs-user"></i>
+                </div>
+                <div class="input-box">
+                    <input placeholder="Senha" type="password">
+                    <i class="bx bxs-lock-alt"></i>
+                </div>
+
+                <div class="remember-forgot">
+                    <label>
+                    <input type="checkbox">
+                    Lembrar senha
+                    </label>
+                    <a href="#">Esqueci a senha</a>
+                </div>
+                <button type="submit" class="login">Login</button>
+                <div class="register-link">
+                    <p>Não tem uma conta?<a href="CadastroHtml.html"> Cadastre-se</a></p>
+                </div>
+            </form>
+        </main>
+
+        <script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyBihcx1ihMSs7egInoGOzV1mWIw9D8LUzw",
+    authDomain: "agendapro-f6ecc.firebaseapp.com",
+    projectId: "agendapro-f6ecc",
+    storageBucket: "agendapro-f6ecc.firebasestorage.app",
+    messagingSenderId: "1045418539073",
+    appId: "1:1045418539073:web:aa920e129ece148c0feec0"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+</script>
+
+    </body>
+</html>
