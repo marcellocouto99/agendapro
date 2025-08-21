@@ -9,15 +9,6 @@
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="menu.css">
   <link rel="stylesheet" href="edicao.css">
-  <style>
-    #appointmentsTable { width:100%; border-collapse: collapse; }
-    #appointmentsTable th, #appointmentsTable td { padding:8px; border-bottom:1px solid #eee; }
-    .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); align-items:center; justify-content:center; }
-    .modal-content { background:#fff; padding:20px; border-radius:8px; width:min(600px,90%); }
-    .close { float:right; cursor:pointer; font-size:20px; }
-    .form-group { margin-bottom:12px; }
-    .form-actions { display:flex; gap:10px; }
-  </style>
 </head>
 <body>
   <div class="logo">
@@ -164,8 +155,8 @@
           <td>${r.dateISO || ""}</td>
           <td>${formatTime(r.time) || ""}</td>
           <td>
-            <button class="btn btn-sm btn-outline-primary me-2" data-edit="${r.id}">Editar</button>
-            <button class="btn btn-sm btn-outline-danger" data-del="${r.id}">Excluir</button>
+            <button class="edit-btn" data-edit="${r.id}">Editar</button>
+            <button class="delete-btn" data-del="${r.id}">Excluir</button>
           </td>
         `;
         tbody.appendChild(tr);
@@ -176,6 +167,7 @@
       if (!t || t.length!==4) return t||"";
       return `${t.slice(0,2)}:${t.slice(2)}`;
     }
+
     function unformatTime(t){ // "09:00" -> "0900"
       return t.replace(":","");
     }
