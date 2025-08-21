@@ -157,18 +157,24 @@
         }
       });
 
-      // Logout
-      const logoutBtn = document.getElementById("logoutBtn");
-      logoutBtn.addEventListener("click", async (e) => {
-        e.preventDefault();
-        try {
-          await signOut(auth);
-          alert("Você saiu da conta!");
-          window.location.href = "index.html";
-        } catch (error) {
-          console.error("Erro ao sair:", error);
-        }
-      });
+      // botão de logout
+const logoutBtn = document.getElementById("logoutBtn");
+logoutBtn.addEventListener("click", async (e) => {
+  e.preventDefault();
+
+  const confirmar = confirm("Tem certeza que deseja sair da conta?");
+  if (!confirmar) return; // cancela se clicar em "Cancelar"
+
+  try {
+    await signOut(auth);
+    alert("Você saiu da conta!");
+    window.location.href = "index.html";
+  } catch (error) {
+    console.error("Erro ao sair:", error);
+    alert("Erro ao sair: " + error.message);
+  }
+});
+
     </script>
 
     <script src="edicao.js"></script>
