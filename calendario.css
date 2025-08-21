@@ -133,3 +133,16 @@
 #timeSection.show {
   display: block !important;
 }
+/* Dia atual com borda amarela */
+.calendar-day.today {
+  border: 2px solid #ffd700;
+  font-weight: bold;
+}
+
+/* Dia com agendamento */
+.calendar-day.agendado {
+  background-color: #660000;
+  color: #fff;
+  border: 2px solid #ff4d4d;
+}
+
