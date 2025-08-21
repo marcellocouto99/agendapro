@@ -128,7 +128,7 @@
     const searchButton = document.getElementById("searchButton");
     const clearButton = document.getElementById("clearButton");
 
-    let allRows = []; // cache em memória [{id, ...data}]
+    let allRows = [];
 
     async function loadAll(){
       tbody.innerHTML = "<tr><td colspan='6'>Carregando...</td></tr>";
@@ -137,6 +137,16 @@
       snap.forEach(d=>{
         allRows.push({ id: d.id, ...d.data() });
       });
+
+      // 🔹 Ordenar por data e hora
+      allRows.sort((a, b) => {
+        if (a.dateISO < b.dateISO) return -1;
+        if (a.dateISO > b.dateISO) return 1;
+        if (a.time < b.time) return -1;
+        if (a.time > b.time) return 1;
+        return 0;
+      });
+
       renderTable(allRows);
     }
 
@@ -163,16 +173,16 @@
       });
     }
 
-    function formatTime(t){ // "0900" -> "09:00"
+    function formatTime(t){
       if (!t || t.length!==4) return t||"";
       return `${t.slice(0,2)}:${t.slice(2)}`;
     }
 
-    function unformatTime(t){ // "09:00" -> "0900"
+    function unformatTime(t){
       return t.replace(":","");
     }
 
-    // Buscar (filtro local)
+    // Buscar
     function doSearch(){
       const q = (searchInput.value || "").trim().toLowerCase();
       if (!q) { renderTable(allRows); return; }
@@ -186,7 +196,7 @@
     searchButton.addEventListener("click", doSearch);
     clearButton.addEventListener("click", ()=>{ searchInput.value=""; renderTable(allRows); });
 
-    // Editar / Excluir (delegação)
+    // Editar / Excluir
     tbody.addEventListener("click", async (e)=>{
       const btn = e.target.closest("button");
       if (!btn) return;
@@ -236,12 +246,10 @@
     editForm.addEventListener("submit", async (e)=>{
       e.preventDefault();
       if (!editingId) return;
-      // validação simples
       if (!editName.value || !editPlate.value || !editStore.value || !editDate.value || !editTime.value){
         alert("Preencha todos os campos."); return;
       }
 
-      // impedir conflito: verifica se já existe alguém nesse mesmo slot
       const qSame = query(
         collection(db,"agendamentos"),
         where("dateISO","==", editDate.value),
