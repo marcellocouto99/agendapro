@@ -19,7 +19,7 @@ class Calendar {
     }
     
     bindEvents() {
-        // Month navigation
+        // Navegação do mês
         document.getElementById('prevMonth').addEventListener('click', () => {
             this.currentDate.setMonth(this.currentDate.getMonth() - 1);
             this.renderCalendar();
@@ -99,7 +99,7 @@ class Calendar {
     }
     
     selectDate(day) {
-        // Remove seleção anterior
+        // Remove seleção anterior (mas não remove .today!)
         const previousSelected = document.querySelector('.calendar-day.selected');
         if (previousSelected) {
             previousSelected.classList.remove('selected');
@@ -108,8 +108,14 @@ class Calendar {
         // Marca o novo dia
         const dayElements = document.querySelectorAll('.calendar-day:not(.other-month)');
         dayElements.forEach(element => {
-            if (element.textContent == day) {
+            if (Number(element.textContent.trim()) === day) {
                 element.classList.add('selected');
+
+                // Mantém destaque se for hoje
+                if (element.classList.contains('today')) {
+                    element.classList.add('today');
+                }
+
                 this.selectedDate = new Date(this.currentDate.getFullYear(), this.currentDate.getMonth(), day);
             }
         });
@@ -123,13 +129,15 @@ class Calendar {
     
     highlightToday() {
         const today = new Date();
-        if (today.getMonth() === this.currentDate.getMonth() && 
-            today.getFullYear() === this.currentDate.getFullYear()) {
-            
+        if (
+            today.getMonth() === this.currentDate.getMonth() &&
+            today.getFullYear() === this.currentDate.getFullYear()
+        ) {
             const dayElements = document.querySelectorAll('.calendar-day:not(.other-month)');
             dayElements.forEach(element => {
-                if (parseInt(element.textContent, 10) === today.getDate()) {
-                    element.classList.add('today'); // ✅ usa a classe do CSS
+                const dayNumber = Number(element.textContent.trim());
+                if (dayNumber === today.getDate()) {
+                    element.classList.add('today'); // ✅ usa a classe CSS
                 }
             });
         }
@@ -140,17 +148,17 @@ class Calendar {
         
         timeSlots.forEach(slot => {
             slot.addEventListener('click', () => {
-                // Remove previous selection
+                // Remove seleção anterior
                 const previousSelected = document.querySelector('.time-slot.selected');
                 if (previousSelected) {
                     previousSelected.classList.remove('selected');
                 }
                 
-                // Add selection to clicked slot
+                // Marca o horário clicado
                 slot.classList.add('selected');
                 this.selectedTime = slot.dataset.time;
                 
-                // Show selection feedback
+                // Mostra feedback no console (ou em tela)
                 this.showSelectionFeedback();
             });
         });
@@ -175,13 +183,13 @@ class Calendar {
     }
 }
 
-// Initialize calendar when DOM is loaded
+// Inicializa calendário
 document.addEventListener('DOMContentLoaded', () => {
     const calendar = new Calendar();
     window.calendar = calendar;    
 });
 
-// Ripple ao clicar
+// Ripple ao clicar nos dias
 document.addEventListener('click', (e) => {
   const dayEl = e.target.closest('.calendar-day');
   if (!dayEl) return;
