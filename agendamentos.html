@@ -1,246 +1,287 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <title>Agendamentos PitStop</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="menu.css">
-    <link rel="stylesheet" href="dados.css">
-    <link rel="stylesheet" href="calendario.css">
-    <style>
-      .time-slot.booked {
-        background-color: #ff4d4d !important;
-        color: white !important;
-        cursor: not-allowed;
-        opacity: 0.7;
-      }
-      .time-slot.selected {
-        background-color: #4CAF50 !important;
-        color: white !important;
-      }
-    </style>
+  <meta charset="UTF-8" />
+  <title>Agendamentos PitStop</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="menu.css">
+  <link rel="stylesheet" href="dados.css">
+  <link rel="stylesheet" href="calendario.css">
+  <style>
+    .time-slot.ocupado { opacity: .5; pointer-events: none; border: 1px solid #dc3545; }
+    .time-slot.selected { outline: 2px solid #0d6efd; }
+  </style>
 </head>
 <body>
-    <div class="logo"> 
-        <img src="img/LogoPitstop.png" alt="Logo" 
-             style="margin-top: 20px; display: block; margin-left: auto; margin-right: auto;" 
-             width="200" height="200">
-    </div>  
+  <div class="logo">
+    <img src="img/LogoPitstop.png" alt="Logo" style="margin-top:20px;display:block;margin-inline:auto" width="200" height="200">
+  </div>
+  <h1 class="titulo">Agenda Cautelar<br>Colorado</h1>
+  <h6 class="subtitulo">Agende seu horário de forma rápida e fácil!</h6>
 
-    <h1 class="titulo">Agenda Cautelar<br>Colorado</h1>
-    <h6 class="subtitulo">Agende seu horário de forma rápida e fácil!</h6>
-
-    <div class="container">
-        <!-- Calendar Section -->
-        <div class="calendar-section">
-            <h2 class="section-title">1. Escolha a Data</h2>
-            <div class="calendar-container">
-                <div class="month-navigation">
-                    <button class="nav-btn prev-btn" id="prevMonth">&lt;</button>
-                    <div class="month-year" id="monthYear">JULHO 2025</div>
-                    <button class="nav-btn next-btn" id="nextMonth">&gt;</button>
-                </div>
-                <div class="days-header">
-                    <div class="day-header">D</div>
-                    <div class="day-header">S</div>
-                    <div class="day-header">T</div>
-                    <div class="day-header">Q</div>
-                    <div class="day-header">Q</div>
-                    <div class="day-header">S</div>
-                    <div class="day-header">S</div>
-                </div>
-                <div class="calendar-grid" id="calendarGrid"></div>
-            </div>
+  <div class="container">
+    <!-- 1. Data -->
+    <div class="calendar-section">
+      <h2 class="section-title">1. Escolha a Data</h2>
+      <div class="calendar-container">
+        <div class="month-navigation">
+          <button class="nav-btn prev-btn" id="prevMonth">&lt;</button>
+          <div class="month-year" id="monthYear">JULHO 2025</div>
+          <button class="nav-btn next-btn" id="nextMonth">&gt;</button>
         </div>
-
-        <!-- Time Selection Section -->
-        <div class="time-section">
-            <h2 class="section-title">2. Escolha o Horário</h2>
-            <div class="time-container">
-                <div class="time-slots" id="timeSlots">
-                    <button class="time-slot" data-time="09:00">09:00</button>
-                    <button class="time-slot" data-time="10:00">10:00</button>
-                    <button class="time-slot" data-time="11:00">11:00</button>
-                    <button class="time-slot" data-time="14:00">14:00</button>
-                    <button class="time-slot" data-time="15:00">15:00</button>
-                    <button class="time-slot" data-time="16:00">16:00</button>
-                </div>
-            </div>
+        <div class="days-header">
+          <div class="day-header">D</div><div class="day-header">S</div><div class="day-header">T</div>
+          <div class="day-header">Q</div><div class="day-header">Q</div><div class="day-header">S</div><div class="day-header">S</div>
         </div>
+        <div class="calendar-grid" id="calendarGrid"></div>
+      </div>
     </div>
 
-    <!-- Formulário Seus Dados -->
-    <div class="dados.section">
-        <h2 class="title-Dados">3. Seus Dados</h2>
-        <div class="pitstop-form-wrapper">
-            <form id="pitstopDadosForm" class="pitstop-dados-form">
-                <div class="pitstop-form-group">
-                    <label for="pitstopNome" class="pitstop-form-label">Nome *</label>
-                    <input type="text" id="pitstopNome" required>
-                </div>
-                <div class="pitstop-form-group">
-                    <label for="pitstopPlaca" class="pitstop-form-label">Placa do Veículo *</label>
-                    <input type="text" id="pitstopPlaca" required maxlength="8">
-                </div>
-                <div class="pitstop-form-group">
-                    <label for="pitstopLoja" class="pitstop-form-label">Loja *</label>
-                    <select id="pitstopLoja" required>
-                        <option value="">Selecione...</option>
-                        <option value="Fiat">Fiat</option>
-                        <option value="Jeep">Jeep</option>
-                        <option value="Nissan">Nissan</option>
-                        <option value="Seminovos">Seminovos</option>
-                        <option value="Toyota">Toyota</option>
-                    </select>
-                </div>
-                <button type="submit" class="pitstop-confirm-button">Confirmar Agendamento</button>
-            </form>
+    <!-- 2. Horário -->
+    <div class="time-section">
+      <h2 class="section-title">2. Escolha o Horário</h2>
+      <div class="time-container">
+        <div class="time-slots" id="timeSlots">
+          <button class="time-slot" data-time="0900">09:00</button>
+          <button class="time-slot" data-time="1000">10:00</button>
+          <button class="time-slot" data-time="1100">11:00</button>
+          <button class="time-slot" data-time="1400">14:00</button>
+          <button class="time-slot" data-time="1500">15:00</button>
+          <button class="time-slot" data-time="1600">16:00</button>
         </div>
+      </div>
     </div>
+  </div>
 
-    <!-- MENU lateral -->
-    <nav class="menu-lateral">
-        <div class="btn-expandir">
-            <i class="bi bi-list" id="btn-exp"></i>
+  <!-- 3. Seus Dados -->
+  <div class="dados.section">
+    <h2 class="title-Dados">3. Seus Dados</h2>
+    <div class="pitstop-form-wrapper">
+      <form id="pitstopDadosForm" class="pitstop-dados-form">
+        <div class="pitstop-form-group">
+          <label for="pitstopNome" class="pitstop-form-label">Nome *</label>
+          <input type="text" id="pitstopNome" name="nome" class="pitstop-form-input" required placeholder="Digite seu nome completo">
+          <span class="pitstop-error-message" id="pitstopNome-error"></span>
         </div>
-        <ul>
-            <li class="item-menu"><a href="calendario.html"><span class="icon"><i class="bi bi-calendar3"></i></span><span class="txt-link">Calendário</span></a></li>
-            <li class="item-menu ativo"><a href="#"><span class="icon"><i class="bi bi-file-earmark-check"></i></span><span class="txt-link">Agendamento</span></a></li>
-            <li class="item-menu"><a href="#"><span class="icon"><i class="bi bi-gear"></i></span><span class="txt-link">Configuração</span></a></li>
-            <li class="item-menu"><a href="edicao.html"><span class="icon"><i class="bi bi-pencil-square"></i></span><span class="txt-link">Editar</span></a></li>
-            <li class="item-menu"><a href="#"><span class="icon"><i class="bi bi-person-circle"></i></span><span class="txt-link">Conta</span></a></li>
-            <li class="item-menu"><a href="#" id="logoutBtn"><span class="icon"><i class="bi bi-box-arrow-right"></i></span><span class="txt-link">Sair</span></a></li>
-        </ul>
-    </nav>
+        <div class="pitstop-form-group">
+          <label for="pitstopPlaca" class="pitstop-form-label">Placa do Veículo *</label>
+          <input type="text" id="pitstopPlaca" name="placa" class="pitstop-form-input" required placeholder="ABC-1234" maxlength="8">
+          <span class="pitstop-error-message" id="pitstopPlaca-error"></span>
+        </div>
+        <div class="pitstop-form-group">
+          <label for="pitstopLoja" class="pitstop-form-label">Loja *</label>
+          <select id="pitstopLoja" name="loja" class="pitstop-form-select" required>
+            <option value="">Selecione...</option>
+            <option value="Fiat">Fiat</option>
+            <option value="Jeep">Jeep</option>
+            <option value="Nissan">Nissan</option>
+            <option value="Seminovos">Seminovos</option>
+            <option value="Toyota">Toyota</option>
+          </select>
+          <span class="pitstop-error-message" id="pitstopLoja-error"></span>
+        </div>
+        <button type="submit" class="pitstop-confirm-button">Confirmar Agendamento</button>
+      </form>
+    </div>
+    <div class="pitstop-footer"><span class="pitstop-made-with">AgendaPro</span></div>
+  </div>
 
-    <!-- Firebase + Scripts -->
-    <script type="module">
-      import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
-      import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
-      import { getFirestore, collection, query, where, getDocs, addDoc } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+  <!-- MENU Lateral -->
+  <nav class="menu-lateral">
+    <div class="btn-expandir"><i class="bi bi-list" id="btn-exp"></i></div>
+    <ul>
+      <li class="item-menu"><a href="calendario.html"><span class="icon"><i class="bi bi-calendar3"></i></span><span class="txt-link">Calendário</span></a></li>
+      <li class="item-menu ativo"><a href="#"><span class="icon"><i class="bi bi-file-earmark-check"></i></span><span class="txt-link">Agendamento</span></a></li>
+      <li class="item-menu"><a href="#"><span class="icon"><i class="bi bi-gear"></i></span><span class="txt-link">Configuração</span></a></li>
+      <li class="item-menu"><a href="edicao.html"><span class="icon"><i class="bi bi-pencil-square"></i></span><span class="txt-link">Editar</span></a></li>
+      <li class="item-menu"><a href="#"><span class="icon"><i class="bi bi-person-circle"></i></span><span class="txt-link">Conta</span></a></li>
+      <li class="item-menu">
+        <a href="#" id="logoutBtn"><span class="icon"><i class="bi bi-box-arrow-right"></i></span><span class="txt-link">Sair</span></a>
+      </li>
+      <li class="logo-item">
+        <span class="icon"><img src="img/LogoAgendaPro.png" alt="Logo AgendaPro" class="logo-agendapro"></span>
+        <span class="logo-text">AgendaPro</span>
+      </li>
+    </ul>
+  </nav>
 
-      const firebaseConfig = {
-        apiKey: "AIzaSyBihcx1ihMSs7egInoGOzV1mWIw9D8LUzw",
-        authDomain: "agendapro-f6ecc.firebaseapp.com",
-        projectId: "agendapro-f6ecc",
-        storageBucket: "agendapro-f6ecc.firebasestorage.app",
-        messagingSenderId: "1045418539073",
-        appId: "1:1045418539073:web:aa920e129ece148c0feec0"
-      };
+  <!-- Firebase + Lógica -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+    import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+    import {
+      getFirestore, collection, query, where, getDocs, addDoc,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
-      const app = initializeApp(firebaseConfig);
-      const auth = getAuth(app);
-      const db = getFirestore(app);
+    // Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyBihcx1ihMSs7egInoGOzV1mWIw9D8LUzw",
+      authDomain: "agendapro-f6ecc.firebaseapp.com",
+      projectId: "agendapro-f6ecc",
+      storageBucket: "agendapro-f6ecc.firebasestorage.app",
+      messagingSenderId: "1045418539073",
+      appId: "1:1045418539073:web:aa920e129ece148c0feec0"
+    };
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
 
-      // protege página
-      onAuthStateChanged(auth, (user) => { if (!user) window.location.href = "index.html"; });
+    // Protege a página
+    onAuthStateChanged(auth, (user) => {
+      if (!user) window.location.href = "index.html";
+    });
 
-      // logout com confirmação
-      document.getElementById("logoutBtn").addEventListener("click", async (e) => {
-        e.preventDefault();
-        if (!confirm("Tem certeza que deseja sair da conta?")) return;
-        await signOut(auth);
-        window.location.href = "index.html";
+    // Sair
+    document.getElementById("logoutBtn").addEventListener("click", async (e) => {
+      e.preventDefault();
+      if (!confirm("Tem certeza que deseja sair da conta?")) return;
+      await signOut(auth);
+      window.location.href = "index.html";
+    });
+
+    // --------- Calendário simples (render e seleção) ---------
+    const monthYear = document.getElementById("monthYear");
+    const calendarGrid = document.getElementById("calendarGrid");
+    const prevMonth = document.getElementById("prevMonth");
+    const nextMonth = document.getElementById("nextMonth");
+    const monthNames = ['JANEIRO','FEVEREIRO','MARÇO','ABRIL','MAIO','JUNHO','JULHO','AGOSTO','SETEMBRO','OUTUBRO','NOVEMBRO','DEZEMBRO'];
+    let currentDate = new Date();
+    let selectedDateISO = null;
+
+    function pad(n){ return n.toString().padStart(2,'0'); }
+    function toISO(d){ return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`; }
+
+    function renderCalendar(){
+      monthYear.textContent = `${monthNames[currentDate.getMonth()]} ${currentDate.getFullYear()}`;
+      calendarGrid.innerHTML = "";
+      const y = currentDate.getFullYear();
+      const m = currentDate.getMonth();
+      const first = new Date(y, m, 1);
+      const last = new Date(y, m+1, 0);
+      const startWeekday = first.getDay(); // 0=Dom
+      // dias do mês anterior
+      for (let i = 0; i < startWeekday; i++){
+        const div = document.createElement("div");
+        div.className = "calendar-day other-month";
+        div.textContent = "";
+        calendarGrid.appendChild(div);
+      }
+      // dias do mês
+      for (let d=1; d<=last.getDate(); d++){
+        const div = document.createElement("div");
+        div.className = "calendar-day";
+        div.textContent = d;
+        div.addEventListener("click", () => {
+          document.querySelectorAll(".calendar-day.selected").forEach(el=>el.classList.remove("selected"));
+          div.classList.add("selected");
+          const sel = new Date(y, m, d);
+          selectedDateISO = toISO(sel);
+          // ao escolher data, checar horários ocupados
+          carregarHorariosOcupados(selectedDateISO);
+        });
+        calendarGrid.appendChild(div);
+      }
+    }
+    prevMonth.addEventListener("click",()=>{ currentDate.setMonth(currentDate.getMonth()-1); renderCalendar(); });
+    nextMonth.addEventListener("click",()=>{ currentDate.setMonth(currentDate.getMonth()+1); renderCalendar(); });
+    renderCalendar();
+
+    // --------- Horários: selecionar + bloquear ocupados ---------
+    const timeSlots = Array.from(document.querySelectorAll(".time-slot"));
+    let selectedTime = null;
+
+    timeSlots.forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        if (btn.classList.contains("ocupado")) return; // não permite selecionar ocupados
+        timeSlots.forEach(b=>b.classList.remove("selected"));
+        btn.classList.add("selected");
+        selectedTime = btn.dataset.time; // "0900" etc
+      });
+    });
+
+    async function carregarHorariosOcupados(dateISO){
+      // limpa selecao e bloqueios
+      selectedTime = null;
+      timeSlots.forEach(b=>{
+        b.classList.remove("selected","ocupado");
+        b.disabled = false;
       });
 
-      // ---------------- CALENDÁRIO -----------------
-      class Calendar {
-        constructor() {
-          this.currentDate = new Date();
-          this.selectedDate = null;
-          this.selectedTime = null;
-          this.monthNames = ["JANEIRO","FEVEREIRO","MARÇO","ABRIL","MAIO","JUNHO","JULHO","AGOSTO","SETEMBRO","OUTUBRO","NOVEMBRO","DEZEMBRO"];
-          this.renderCalendar();
-          this.bindEvents();
-        }
+      // busca no Firestore por agendamentos com a mesma data
+      const q = query(collection(db,"agendamentos"), where("dateISO","==",dateISO));
+      const snap = await getDocs(q);
+      const ocupados = new Set();
+      snap.forEach(doc => {
+        const d = doc.data();
+        if (d.time) ocupados.add(d.time); // "0900"
+      });
 
-        bindEvents() {
-          document.getElementById("prevMonth").addEventListener("click", () => { this.currentDate.setMonth(this.currentDate.getMonth()-1); this.renderCalendar(); });
-          document.getElementById("nextMonth").addEventListener("click", () => { this.currentDate.setMonth(this.currentDate.getMonth()+1); this.renderCalendar(); });
+      timeSlots.forEach(b=>{
+        if (ocupados.has(b.dataset.time)){
+          b.classList.add("ocupado");
+          b.disabled = true;
         }
+      });
+    }
 
-        renderCalendar() {
-          const monthYear = document.getElementById("monthYear");
-          const grid = document.getElementById("calendarGrid");
-          monthYear.textContent = `${this.monthNames[this.currentDate.getMonth()]} ${this.currentDate.getFullYear()}`;
-          grid.innerHTML = "";
-          const ano=this.currentDate.getFullYear(), mes=this.currentDate.getMonth();
-          const primeiroDia=new Date(ano,mes,1).getDay();
-          const ultimoDia=new Date(ano,mes+1,0).getDate();
-          for(let i=0;i<primeiroDia;i++){ grid.appendChild(this.createDayElement("",true)); }
-          for(let d=1;d<=ultimoDia;d++){ grid.appendChild(this.createDayElement(d,false)); }
-        }
+    // --------- Envio do formulário (criar agendamento) ---------
+    const form = document.getElementById("pitstopDadosForm");
+    form.addEventListener("submit", async (e)=>{
+      e.preventDefault();
+      const user = auth.currentUser;
+      if (!user){ alert("Faça login para agendar."); return; }
 
-        createDayElement(dia,isOther){
-          const el=document.createElement("div");
-          el.className="calendar-day"+(isOther?" other-month":"");
-          el.textContent=dia;
-          if(!isOther && dia){
-            el.addEventListener("click",()=>this.selectDate(dia));
-          }
-          return el;
-        }
-
-        async selectDate(dia){
-          document.querySelectorAll(".calendar-day").forEach(el=>el.classList.remove("selected"));
-          event.target.classList.add("selected");
-          this.selectedDate=new Date(this.currentDate.getFullYear(),this.currentDate.getMonth(),dia);
-          await this.loadBookedTimes();
-        }
-
-        async loadBookedTimes(){
-          if(!this.selectedDate) return;
-          const dateKey=this.selectedDate.toISOString().split("T")[0];
-          const q=query(collection(db,"bookings"),where("data","==",dateKey));
-          const snap=await getDocs(q);
-          const ocupados=[];
-          snap.forEach(doc=>ocupados.push(doc.data().hora));
-          document.querySelectorAll(".time-slot").forEach(btn=>{
-            btn.classList.remove("booked","selected");
-            btn.disabled=false;
-            if(ocupados.includes(btn.dataset.time)){
-              btn.classList.add("booked");
-              btn.disabled=true;
-            }
-            btn.onclick=()=>{
-              document.querySelectorAll(".time-slot").forEach(b=>b.classList.remove("selected"));
-              btn.classList.add("selected");
-              this.selectedTime=btn.dataset.time;
-            };
-          });
-        }
-
-        getSelectedDateTime(){
-          if(this.selectedDate && this.selectedTime){
-            return {data:this.selectedDate.toISOString().split("T")[0],hora:this.selectedTime};
-          }
-          return null;
-        }
+      if (!selectedDateISO){
+        alert("Selecione uma data no calendário.");
+        return;
+      }
+      if (!selectedTime){
+        alert("Selecione um horário.");
+        return;
       }
 
-      const calendar=new Calendar();
+      const nome = document.getElementById("pitstopNome").value.trim();
+      const placa = document.getElementById("pitstopPlaca").value.trim().toUpperCase();
+      const loja  = document.getElementById("pitstopLoja").value;
 
-      // ---------------- FORM -----------------
-      document.getElementById("pitstopDadosForm").addEventListener("submit",async(e)=>{
-        e.preventDefault();
-        const ag=calendar.getSelectedDateTime();
-        if(!ag){ alert("Selecione data e horário!"); return; }
-        const nome=document.getElementById("pitstopNome").value;
-        const placa=document.getElementById("pitstopPlaca").value;
-        const loja=document.getElementById("pitstopLoja").value;
-        try{
-          await addDoc(collection(db,"bookings"),{nome,placa,loja,data:ag.data,hora:ag.hora});
-          alert("✅ Agendamento realizado com sucesso!");
-          calendar.loadBookedTimes(); // atualiza bloqueio
-        }catch(err){
-          console.error(err);
-          alert("Erro ao agendar: "+err.message);
-        }
+      if (!nome || !placa || !loja){
+        alert("Preencha todos os campos obrigatórios.");
+        return;
+      }
+
+      // Confere de novo se o slot ainda está livre (evita corrida)
+      const q = query(
+        collection(db,"agendamentos"),
+        where("dateISO","==",selectedDateISO),
+        where("time","==",selectedTime)
+      );
+      const snap = await getDocs(q);
+      if (!snap.empty){
+        alert("Este horário acabou de ser ocupado. Escolha outro.");
+        await carregarHorariosOcupados(selectedDateISO);
+        return;
+      }
+
+      // Cria documento
+      await addDoc(collection(db,"agendamentos"),{
+        name: nome,
+        plate: placa,
+        store: loja,
+        dateISO: selectedDateISO,                 // "YYYY-MM-DD"
+        time: selectedTime,                       // "0900"
+        createdAt: serverTimestamp(),
+        userId: user.uid
       });
-    </script>
 
-    <script src="menu.js"></script>
+      alert("Agendamento criado com sucesso!");
+      window.location.href = "calendario.html";
+    });
+  </script>
+
+  <script src="menu.js"></script>
 </body>
 </html>
